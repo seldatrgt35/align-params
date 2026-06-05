@@ -20,9 +20,9 @@ Before:
 
 ```cpp
 logAtLevels(LogLevel::ERROR,
-            API_ID,
-            value,
-            FAILED_MSG,
+        API_ID,
+      value,
+          FAILED_MSG,
             {LEVEL_3});
 
 After:
