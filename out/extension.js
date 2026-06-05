@@ -36,6 +36,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.activate = activate;
 exports.deactivate = deactivate;
 const vscode = __importStar(require("vscode"));
+/* Checks if a line starts with a control statement (if, for, while, switch). */
 function isControlStatement(line) {
     const t = line.trim();
     return t.startsWith('if') ||
@@ -43,6 +44,7 @@ function isControlStatement(line) {
         t.startsWith('while') ||
         t.startsWith('switch');
 }
+/* Checks if a line is a comment or documentation line. */
 function isComment(line) {
     const t = line.trim();
     return t.startsWith('//') ||
@@ -51,6 +53,8 @@ function isComment(line) {
         t.startsWith('*/') ||
         t.startsWith('@');
 }
+/* Aligns multi-line function call parameters in a document.
+ * Keeps alignment consistent based on the first parameter position. */
 function alignDocument(document) {
     const text = document.getText();
     const lines = text.split('\n');
@@ -61,12 +65,13 @@ function alignDocument(document) {
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
         const trimmed = line.trim();
-        // ✅ skip comments
+        // skip comments
         if (isComment(line)) {
             newLines.push(line);
             continue;
         }
-        // ✅ START
+        /* Detect the start of a function call by looking for an opening parenthesis that is not part of a control statement.
+         * Then determine the base indentation for parameters and track parentheses to handle multi-line calls. */
         if (!insideCall && line.includes('(') && !isControlStatement(trimmed)) {
             const index = line.indexOf('(');
             // multiline mı kontrol et
@@ -81,7 +86,6 @@ function alignDocument(document) {
                 newLines.push(line);
                 continue;
             }
-            // ✅ doğru hizalama: ilk parametreye göre
             const afterParen = line.slice(index + 1);
             const firstParamOffset = afterParen.search(/\S/);
             if (firstParamOffset >= 0) {
@@ -102,7 +106,6 @@ function alignDocument(document) {
                 newLines.push(line);
                 continue;
             }
-            // paren hesapla
             parenBalance += (line.match(/\(/g) || []).length;
             parenBalance -= (line.match(/\)/g) || []).length;
             const spaces = ' '.repeat(baseIndent);
@@ -116,6 +119,7 @@ function alignDocument(document) {
     }
     return newLines.join('\n');
 }
+/* Activates the extension, registering a command and a save event listener to align parameters. */
 function activate(context) {
     console.log('Align Params extension is active!');
     vscode.workspace.onWillSaveTextDocument((event) => {

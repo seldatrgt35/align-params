@@ -1,8 +1,10 @@
 {
   "name": "align-params",
   "displayName": "smart-param-align",
+  "publisher": "selda-plugins",
   "description": "Aligns multi-line function parameters based on the opening parenthesis position for consistent and clean formatting.",
-  "version": "0.0.1",
+  "version": "0.0.3",
+  "icon": "icon.png",
   "engines": {
     "vscode": "^1.120.0"
   },
